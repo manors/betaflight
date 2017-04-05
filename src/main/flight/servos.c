@@ -179,7 +179,7 @@ void servoMixerInit(servoMixer_t *initialCustomServoMixers)
     // enable servos for mixes that require them. note, this shifts motor counts.
     useServo = mixers[currentMixerMode].useServo;
     // if we want camstab/trig, that also enables servos, even if mixer doesn't
-    if (feature(FEATURE_SERVO_TILT) || feature(FEATURE_CHANNEL_FORWARDING))
+    if (feature(FEATURE_SERVO_TILT) || feature(FEATURE_CHANNEL_FORWARDING) || feature(FEATURE_PWM_DIMMER))
         useServo = 1;
 
     // give all servos a default command
@@ -328,6 +328,10 @@ void writeServos(void)
         forwardAuxChannelsToServos(servoIndex);
         servoIndex += MAX_AUX_CHANNEL_COUNT;
     }
+
+    // pwm dimmer
+    if (feature(FEATURE_PWM_DIMMER))
+        pwmWriteServo(servoIndex++, servo[SERVO_PWM_DIMMER]);
 }
 
 STATIC_UNIT_TESTED void servoMixer(void)
@@ -455,6 +459,15 @@ void servoTable(void)
     // constrain servos
     for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
         servo[i] = constrain(servo[i], servoConf[i].min, servoConf[i].max); // limit the values
+    }
+
+    // pwm dimmer
+    if (feature(FEATURE_PWM_DIMMER)) {
+        int16_t value;
+        value = determineServoMiddleOrForwardFromChannel(SERVO_PWM_DIMMER);
+        value = constrain(value, 1000, 2000);
+        value = scaleRange(value, 1000, 2000, 0, 2000);
+        servo[SERVO_PWM_DIMMER] = value;
     }
 }
 

@@ -58,7 +58,9 @@ typedef enum {
     SERVO_SINGLECOPTER_1 = 3,
     SERVO_SINGLECOPTER_2 = 4,
     SERVO_SINGLECOPTER_3 = 5,
-    SERVO_SINGLECOPTER_4 = 6
+    SERVO_SINGLECOPTER_4 = 6,
+
+    SERVO_PWM_DIMMER = 0
 } servoIndex_e; // FIXME rename to servoChannel_e
 
 #define SERVO_PLANE_INDEX_MIN SERVO_FLAPS
